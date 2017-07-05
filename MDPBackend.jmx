@@ -68,7 +68,7 @@
       </Arguments>
       <hashTree/>
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-        <stringProp name="filename">../common/mdp.csv</stringProp>
+        <stringProp name="filename">common/mdp.csv</stringProp>
         <stringProp name="fileEncoding"></stringProp>
         <stringProp name="variableNames">uniqueTaskId,filepath</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
