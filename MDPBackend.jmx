@@ -14,44 +14,9 @@
     <hashTree>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="project" elementType="Argument">
-            <stringProp name="Argument.name">project</stringProp>
-            <stringProp name="Argument.value">58734e519e6e067add13f194</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="user" elementType="Argument">
-            <stringProp name="Argument.name">user</stringProp>
-            <stringProp name="Argument.value">d89e7390-192c-4c9c-8426-2de47e0bd9de</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="TokenURL" elementType="Argument">
             <stringProp name="Argument.name">TokenURL</stringProp>
             <stringProp name="Argument.value">token-service.apps.us2.dev.foundry.mrll.com</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="replace" elementType="Argument">
-            <stringProp name="Argument.name">replace</stringProp>
-            <stringProp name="Argument.value">Test.xls</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="rename" elementType="Argument">
-            <stringProp name="Argument.name">rename</stringProp>
-            <stringProp name="Argument.value">RenameFile1</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="dir" elementType="Argument">
-            <stringProp name="Argument.name">dir</stringProp>
-            <stringProp name="Argument.value">2</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="files" elementType="Argument">
-            <stringProp name="Argument.name">files</stringProp>
-            <stringProp name="Argument.value">5</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="FRname" elementType="Argument">
-            <stringProp name="Argument.name">FRname</stringProp>
-            <stringProp name="Argument.value">PerformanceTest11</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="JavelinURL" elementType="Argument">
@@ -68,7 +33,7 @@
       </Arguments>
       <hashTree/>
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-        <stringProp name="filename">common/mdp.csv</stringProp>
+        <stringProp name="filename">D:\jmeterscripts\MerrillUploadData\mdp.csv</stringProp>
         <stringProp name="fileEncoding"></stringProp>
         <stringProp name="variableNames">uniqueTaskId,filepath</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
@@ -359,7 +324,7 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks with filter pro" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -375,7 +340,7 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
     }&#xd;
   ],&#xd;
   &quot;rowsCount&quot;: 20,&#xd;
-  &quot;sort&quot;: &quot;string&quot;&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
@@ -395,7 +360,106 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
-        <hashTree/>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks with filter pro and page 5" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;order&quot;: &quot;ASC&quot;,&#xd;
+  &quot;page&quot;: 5,&#xd;
+  &quot;params&quot;: [&#xd;
+    {&#xd;
+      &quot;filterField&quot;: &quot;lastAction&quot;,&#xd;
+      &quot;filterValue&quot;: &quot;pro&quot;&#xd;
+    }&#xd;
+  ],&#xd;
+  &quot;rowsCount&quot;: 20,&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/tasks</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks by clearing filter" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;order&quot;: &quot;ASC&quot;,&#xd;
+  &quot;page&quot;: 0,&#xd;
+  &quot;params&quot;: [],&#xd;
+  &quot;rowsCount&quot;: 20,&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/tasks</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Unassign" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
@@ -425,17 +489,13 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Requeue" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Download" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">[&#xd;
-  {&#xd;
-    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
-  }&#xd;
-]</stringProp>
+                <stringProp name="Argument.value"></stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -444,8 +504,8 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/api/manualdoc/requeue</stringProp>
-          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <stringProp name="HTTPSampler.path">api/manualdoc/${uniqueTaskId}/download</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -465,16 +525,84 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Download" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Requeue" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">[&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  }&#xd;
+]</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">api/manualdoc/${uniqueTaskId}/download</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/requeue</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -736,7 +864,7 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           <stringProp name="filename"></stringProp>
         </ResultCollector>
         <hashTree/>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
