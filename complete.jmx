@@ -4,7 +4,7 @@
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="MDPBackend" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
-      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
@@ -272,14 +272,14 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="MDP" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="MDP" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${__property(user,1)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__property(ramp,1)}</stringProp>
         <longProp name="ThreadGroup.start_time">1452238614000</longProp>
         <longProp name="ThreadGroup.end_time">1452238614000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -432,7 +432,7 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Unassign" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Unassign" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -461,7 +461,7 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Download" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Download" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -895,8 +895,8 @@ brLogin.close();</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${__property(user,1)}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${__property(ramp,1)}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">6</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">6</stringProp>
         <longProp name="ThreadGroup.start_time">1499353776000</longProp>
         <longProp name="ThreadGroup.end_time">1499353776000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -913,30 +913,188 @@ brLogin.close();</stringProp>
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="linenumberReader" enabled="false">
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
           <stringProp name="script">import java.io.File;
+import org.apache.commons.io.FileUtils;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 import java.io.lang.*;
+import org.apache.jmeter.services.FileServer;
 
+int thread=ctx.getThreadNum();
+log.info(&quot;current thread number &quot;+thread);
+
+int threadNum=ctx.getThreadGroup().getNumThreads();
+log.info(&quot;total thread number &quot;+threadNum);
+
+
+
+//int lines = FileUtils.readLines(new File(&quot;${csv}&quot;)).size();
+//log.info(&quot;lines&quot;+lines+&quot;&quot;);
 LineNumberReader lineReader = new LineNumberReader(new FileReader(new File(&quot;${csv}&quot;)));
-String line = null;
-int count = 0;
-while ((line = lineReader.readLine()) != null) {
- String[] pair = line.split(&quot;,&quot;);
+int currentrow=${currentrow};
+  	log.info(&quot;getnumber before thread loop start&quot;+currentrow+&quot;&quot;);
+//for (int i = thread ; i &lt; threadNum ; i ++) {
+		int count = 0;
+		lineReader.setLineNumber(currentrow);
+		         log.info(&quot;Line &quot; + lineReader.getLineNumber());
+		         String line = null;
+		  		//int getnumber = lineReader.getLineNumber();
+  	//int setnumber = lineReader.setLineNumber(currentrow);
+  	//log.info(&quot;getnumber before thread loop start&quot;+getnumber+&quot;&quot;);
+  	while ((line = lineReader.readLine()) != null &amp;&amp; count&lt;20 ) {
+
+	  		int getnumber = lineReader.getLineNumber();
+	  		log.info(&quot;current&quot;+getnumber+&quot;&quot;+line);
+	  				         log.info(&quot;Line &quot; + line);
+	  			  //currentrow=getnumber;
+ 			String[] pair = line.split(&quot;,&quot;);
  //log.info(line);
- props.put(&quot;uniqueTaskId_&quot; + count, pair[0]);
- props.put(&quot;filepath_&quot; + count, pair[1]);
- count++;
- log.info(pair[0]);
-  log.info(pair[1]);
+			 props.put(&quot;uniqueTaskId_&quot; + count, pair[0]);
+			 props.put(&quot;filepath_&quot; + count, pair[1]);
+			 count++;
+			 log.info(pair[0]);
+			  log.info(pair[1]);
+
 }
+	 // int getnumber = lineReader.getLineNumber();
+	 	//    	log.info(&quot;currentrow&quot;+currentrow+&quot;&quot;);
+	    	//log.info(&quot;currentrow&quot;+currentrow+&quot;&quot;);
+	    //	lineReader.setLineNumber(currentrow);
+	    		  //  	log.info(&quot;currentrow outside loop&quot;+currentrow+&quot;&quot;);
+	    		    	  		//int getnumber = lineReader.getLineNumber();
+	    		    	  		//	    		    	log.info(&quot;currentrow outside loop&quot;+getnumber+&quot;&quot;);
+	  //f = new FileOutputStream(&quot;${csv}&quot;, true);
+//p = new PrintStream(f); 
+//this.interpreter.setOut(p); 
+//print(currentrow);
+
+//}
+//f.close();
+
+	    //	log.info(&quot;currentrow outside loop&quot;+currentrow+&quot;&quot;);
+//vars.put(&quot;lines&quot;, String.valueOf(lines)); // store the count into &quot;lines&quot; variable
+
+		  //int getnumber = lineReader.getLineNumber();  
+
+//vars.put(&quot;currentrow&quot;,currentrow);
+//log.info(${linestart});
+//FileOutputStream f=new FileOutputStream (&quot;${csv}&quot;);
 
 lineReader.close();</stringProp>
         </BeanShellPreProcessor>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="linenumberReader" enabled="true">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">import java.io.File;
+import org.apache.commons.io.FileUtils;
+import java.io.FileReader;
+import java.io.LineNumberReader;
+import java.io.lang.*;
+import org.apache.jmeter.services.FileServer;
+
+int thread=ctx.getThreadNum();
+log.info(&quot;current thread number &quot;+thread);
+
+int threadNum=ctx.getThreadGroup().getNumThreads();
+log.info(&quot;total thread number &quot;+threadNum);
+String csv;
+if(thread == 0)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp.csv&quot;;
+}
+if(thread == 1)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp1.csv&quot;;
+}
+if(thread == 2)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp2.csv&quot;;
+}
+if(thread == 3)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp3.csv&quot;;
+}
+if(thread == 4)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp4.csv&quot;;
+}
+if(thread == 5)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp5.csv&quot;;
+}
+//if(thread == 6)
+//{
+//	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp6.csv&quot;;
+//}
+
+
+//int lines = FileUtils.readLines(new File(&quot;${csv}&quot;)).size();
+//log.info(&quot;lines&quot;+lines+&quot;&quot;);
+LineNumberReader lineReader = new LineNumberReader(new FileReader(new File(csv)));
+//int currentrow=${currentrow};
+  //	log.info(&quot;getnumber before thread loop start&quot;+currentrow+&quot;&quot;);
+//for (int i = thread ; i &lt; threadNum ; i ++) {
+		int count = 0;
+	//	lineReader.setLineNumber(currentrow);
+	//	         log.info(&quot;Line &quot; + lineReader.getLineNumber());
+		         String line = null;
+		  		//int getnumber = lineReader.getLineNumber();
+  	//int setnumber = lineReader.setLineNumber(currentrow);
+  	//log.info(&quot;getnumber before thread loop start&quot;+getnumber+&quot;&quot;);
+  	while ((line = lineReader.readLine()) != null &amp;&amp; count&lt;20 ) {
+
+	  		//int getnumber = lineReader.getLineNumber();
+	  		//log.info(&quot;current&quot;+getnumber+&quot;&quot;+line);
+	  				         log.info(&quot;Line &quot; + line);
+	  			  //currentrow=getnumber;
+ 			String[] pair = line.split(&quot;,&quot;);
+ //log.info(line);
+			 props.put(&quot;uniqueTaskId_&quot; + count, pair[0]);
+			 props.put(&quot;filepath_&quot; + count, pair[1]);
+			 count++;
+			 log.info(pair[0]);
+			  log.info(pair[1]);
+
+}
+	 // int getnumber = lineReader.getLineNumber();
+	 	//    	log.info(&quot;currentrow&quot;+currentrow+&quot;&quot;);
+	    	//log.info(&quot;currentrow&quot;+currentrow+&quot;&quot;);
+	    //	lineReader.setLineNumber(currentrow);
+	    		  //  	log.info(&quot;currentrow outside loop&quot;+currentrow+&quot;&quot;);
+	    		    	  		//int getnumber = lineReader.getLineNumber();
+	    		    	  		//	    		    	log.info(&quot;currentrow outside loop&quot;+getnumber+&quot;&quot;);
+	  //f = new FileOutputStream(&quot;${csv}&quot;, true);
+//p = new PrintStream(f); 
+//this.interpreter.setOut(p); 
+//print(currentrow);
+
+//}
+//f.close();
+
+	    //	log.info(&quot;currentrow outside loop&quot;+currentrow+&quot;&quot;);
+//vars.put(&quot;lines&quot;, String.valueOf(lines)); // store the count into &quot;lines&quot; variable
+
+		  //int getnumber = lineReader.getLineNumber();  
+
+//vars.put(&quot;currentrow&quot;,currentrow);
+//log.info(${linestart});
+//FileOutputStream f=new FileOutputStream (&quot;${csv}&quot;);
+
+lineReader.close();</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion" enabled="false">
+          <stringProp name="BeanShellAssertion.query">${__setProperty(currentrow, ${currentrow})};</stringProp>
+          <stringProp name="BeanShellAssertion.filename"></stringProp>
+          <stringProp name="BeanShellAssertion.parameters"></stringProp>
+          <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+        </BeanShellAssertion>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Requeue" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -1083,6 +1241,30 @@ lineReader.close();</stringProp>
           <stringProp name="filename"></stringProp>
         </ResultCollector>
         <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="linenumberReader" enabled="false">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">import com.opencsv.CSVReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+CsvReader reader = new CsvReader(new FileReader(&quot;${csv}&quot;), &apos;\t&apos;, &apos;\&apos;&apos;, ${currentrow});
+reader.readHeaders();
+
+while(reader.readRecord())
+            {
+                String taskId = reader.get(&quot;taskId&quot;);
+                String filepath = reader.get(&quot;path&quot;);
+                String currentrow = reader.get(&quot;row&quot;);
+                
+
+                // perform program logic here
+                System.out.println(taskId + &quot;:&quot; + filepath + &quot;:&quot; + currentrow);
+            }
+}</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Reject" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -1090,8 +1272,8 @@ lineReader.close();</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${__property(user,1)}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${__property(ramp,1)}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1499353776000</longProp>
         <longProp name="ThreadGroup.end_time">1499353776000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -1528,7 +1710,7 @@ lineReader.close();</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Unassign" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Unassign" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -1552,6 +1734,142 @@ lineReader.close();</stringProp>
           </collectionProp>
         </HeaderManager>
         <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks with filter pro" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;order&quot;: &quot;ASC&quot;,&#xd;
+  &quot;page&quot;: 0,&#xd;
+  &quot;params&quot;: [&#xd;
+    {&#xd;
+      &quot;filterField&quot;: &quot;lastAction&quot;,&#xd;
+      &quot;filterValue&quot;: &quot;pro&quot;&#xd;
+    }&#xd;
+  ],&#xd;
+  &quot;rowsCount&quot;: 20,&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/tasks</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks with filter pro and page 5" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;order&quot;: &quot;ASC&quot;,&#xd;
+  &quot;page&quot;: 5,&#xd;
+  &quot;params&quot;: [&#xd;
+    {&#xd;
+      &quot;filterField&quot;: &quot;lastAction&quot;,&#xd;
+      &quot;filterValue&quot;: &quot;pro&quot;&#xd;
+    }&#xd;
+  ],&#xd;
+  &quot;rowsCount&quot;: 20,&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/tasks</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks by clearing filter" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;order&quot;: &quot;ASC&quot;,&#xd;
+  &quot;page&quot;: 0,&#xd;
+  &quot;params&quot;: [],&#xd;
+  &quot;rowsCount&quot;: 20,&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/tasks</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Unassign" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
@@ -1581,6 +1899,167 @@ lineReader.close();</stringProp>
           </HeaderManager>
           <hashTree/>
         </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Download" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value"></stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">api/manualdoc/${uniqueTaskId}/download</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Requeue" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">[&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  }&#xd;
+]</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/requeue</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Upload" enabled="false">
+          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+            <collectionProp name="HTTPFileArgs.files">
+              <elementProp name="${filepath}" elementType="HTTPFileArg">
+                <stringProp name="File.path">${filepath}</stringProp>
+                <stringProp name="File.paramname">file</stringProp>
+                <stringProp name="File.mimetype">multipart/form-data</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/upload</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
         <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
@@ -1709,6 +2188,171 @@ lineReader.close();</stringProp>
           </collectionProp>
         </HeaderManager>
         <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks with filter pro" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;order&quot;: &quot;ASC&quot;,&#xd;
+  &quot;page&quot;: 0,&#xd;
+  &quot;params&quot;: [&#xd;
+    {&#xd;
+      &quot;filterField&quot;: &quot;lastAction&quot;,&#xd;
+      &quot;filterValue&quot;: &quot;pro&quot;&#xd;
+    }&#xd;
+  ],&#xd;
+  &quot;rowsCount&quot;: 20,&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/tasks</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks with filter pro and page 5" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;order&quot;: &quot;ASC&quot;,&#xd;
+  &quot;page&quot;: 5,&#xd;
+  &quot;params&quot;: [&#xd;
+    {&#xd;
+      &quot;filterField&quot;: &quot;lastAction&quot;,&#xd;
+      &quot;filterValue&quot;: &quot;pro&quot;&#xd;
+    }&#xd;
+  ],&#xd;
+  &quot;rowsCount&quot;: 20,&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/tasks</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Manual Tasks by clearing filter" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;order&quot;: &quot;ASC&quot;,&#xd;
+  &quot;page&quot;: 0,&#xd;
+  &quot;params&quot;: [],&#xd;
+  &quot;rowsCount&quot;: 20,&#xd;
+  &quot;sort&quot;: &quot;totalProcessingTime&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/tasks</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Unassign" enabled="false">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/${uniqueTaskId}/unassign</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Download" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -1744,16 +2388,132 @@ lineReader.close();</stringProp>
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="3059181">code</stringProp>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Requeue" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">[&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  },&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${uniqueTaskId}&#xd;
+  }&#xd;
+]</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
             </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_message</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">2</intProp>
-          </ResponseAssertion>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/requeue</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
           <hashTree/>
         </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Upload" enabled="false">
+          <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+            <collectionProp name="HTTPFileArgs.files">
+              <elementProp name="${filepath}" elementType="HTTPFileArg">
+                <stringProp name="File.path">${filepath}</stringProp>
+                <stringProp name="File.paramname">file</stringProp>
+                <stringProp name="File.mimetype">multipart/form-data</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/upload</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
         <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
@@ -1856,6 +2616,326 @@ lineReader.close();</stringProp>
           </objProp>
           <stringProp name="filename"></stringProp>
         </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Requeue" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${__property(user,1)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__property(ramp,1)}</stringProp>
+        <longProp name="ThreadGroup.start_time">1499353776000</longProp>
+        <longProp name="ThreadGroup.end_time">1499353776000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer ${__property(token)}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="linenumberReader" enabled="false">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">import java.io.File;
+import org.apache.commons.io.FileUtils;
+import java.io.FileReader;
+import java.io.LineNumberReader;
+import java.io.lang.*;
+import org.apache.jmeter.services.FileServer;
+
+int thread=ctx.getThreadNum();
+log.info(&quot;current thread number &quot;+thread);
+
+int threadNum=ctx.getThreadGroup().getNumThreads();
+log.info(&quot;total thread number &quot;+threadNum);
+
+
+
+//int lines = FileUtils.readLines(new File(&quot;${csv}&quot;)).size();
+//log.info(&quot;lines&quot;+lines+&quot;&quot;);
+LineNumberReader lineReader = new LineNumberReader(new FileReader(new File(&quot;${csv}&quot;)));
+int currentrow=${currentrow};
+  	log.info(&quot;getnumber before thread loop start&quot;+currentrow+&quot;&quot;);
+//for (int i = thread ; i &lt; threadNum ; i ++) {
+		int count = 0;
+		lineReader.setLineNumber(currentrow);
+		         log.info(&quot;Line &quot; + lineReader.getLineNumber());
+		         String line = null;
+		  		//int getnumber = lineReader.getLineNumber();
+  	//int setnumber = lineReader.setLineNumber(currentrow);
+  	//log.info(&quot;getnumber before thread loop start&quot;+getnumber+&quot;&quot;);
+  	while ((line = lineReader.readLine()) != null &amp;&amp; count&lt;20 ) {
+
+	  		int getnumber = lineReader.getLineNumber();
+	  		log.info(&quot;current&quot;+getnumber+&quot;&quot;+line);
+	  				         log.info(&quot;Line &quot; + line);
+	  			  //currentrow=getnumber;
+ 			String[] pair = line.split(&quot;,&quot;);
+ //log.info(line);
+			 props.put(&quot;uniqueTaskId_&quot; + count, pair[0]);
+			 props.put(&quot;filepath_&quot; + count, pair[1]);
+			 count++;
+			 log.info(pair[0]);
+			  log.info(pair[1]);
+
+}
+	 // int getnumber = lineReader.getLineNumber();
+	 	//    	log.info(&quot;currentrow&quot;+currentrow+&quot;&quot;);
+	    	//log.info(&quot;currentrow&quot;+currentrow+&quot;&quot;);
+	    //	lineReader.setLineNumber(currentrow);
+	    		  //  	log.info(&quot;currentrow outside loop&quot;+currentrow+&quot;&quot;);
+	    		    	  		//int getnumber = lineReader.getLineNumber();
+	    		    	  		//	    		    	log.info(&quot;currentrow outside loop&quot;+getnumber+&quot;&quot;);
+	  //f = new FileOutputStream(&quot;${csv}&quot;, true);
+//p = new PrintStream(f); 
+//this.interpreter.setOut(p); 
+//print(currentrow);
+
+//}
+//f.close();
+
+	    //	log.info(&quot;currentrow outside loop&quot;+currentrow+&quot;&quot;);
+//vars.put(&quot;lines&quot;, String.valueOf(lines)); // store the count into &quot;lines&quot; variable
+
+		  //int getnumber = lineReader.getLineNumber();  
+
+//vars.put(&quot;currentrow&quot;,currentrow);
+//log.info(${linestart});
+//FileOutputStream f=new FileOutputStream (&quot;${csv}&quot;);
+
+lineReader.close();</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="linenumberReader" enabled="false">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">import java.io.File;
+import org.apache.commons.io.FileUtils;
+import java.io.FileReader;
+import java.io.LineNumberReader;
+import java.io.lang.*;
+import org.apache.jmeter.services.FileServer;
+
+int thread=ctx.getThreadNum();
+log.info(&quot;current thread number &quot;+thread);
+
+int threadNum=ctx.getThreadGroup().getNumThreads();
+log.info(&quot;total thread number &quot;+threadNum);
+String csv;
+if(thread == 0)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp.csv&quot;;
+}
+if(thread == 1)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp1.csv&quot;;
+}
+if(thread == 2)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp2.csv&quot;;
+}
+if(thread == 3)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp3.csv&quot;;
+}
+if(thread == 4)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp4.csv&quot;;
+}
+if(thread == 5)
+{
+	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp5.csv&quot;;
+}
+//if(thread == 6)
+//{
+//	csv=&quot;D://jmeterscripts//MerrillUploadData//mdp6.csv&quot;;
+//}
+
+
+//int lines = FileUtils.readLines(new File(&quot;${csv}&quot;)).size();
+//log.info(&quot;lines&quot;+lines+&quot;&quot;);
+LineNumberReader lineReader = new LineNumberReader(new FileReader(new File(csv)));
+//int currentrow=${currentrow};
+  //	log.info(&quot;getnumber before thread loop start&quot;+currentrow+&quot;&quot;);
+//for (int i = thread ; i &lt; threadNum ; i ++) {
+		int count = 0;
+	//	lineReader.setLineNumber(currentrow);
+	//	         log.info(&quot;Line &quot; + lineReader.getLineNumber());
+		         String line = null;
+		  		//int getnumber = lineReader.getLineNumber();
+  	//int setnumber = lineReader.setLineNumber(currentrow);
+  	//log.info(&quot;getnumber before thread loop start&quot;+getnumber+&quot;&quot;);
+  	while ((line = lineReader.readLine()) != null &amp;&amp; count&lt;20 ) {
+
+	  		//int getnumber = lineReader.getLineNumber();
+	  		//log.info(&quot;current&quot;+getnumber+&quot;&quot;+line);
+	  				         log.info(&quot;Line &quot; + line);
+	  			  //currentrow=getnumber;
+ 			String[] pair = line.split(&quot;,&quot;);
+ //log.info(line);
+			 props.put(&quot;uniqueTaskId_&quot; + count, pair[0]);
+			 props.put(&quot;filepath_&quot; + count, pair[1]);
+			 count++;
+			 log.info(pair[0]);
+			  log.info(pair[1]);
+
+}
+	 // int getnumber = lineReader.getLineNumber();
+	 	//    	log.info(&quot;currentrow&quot;+currentrow+&quot;&quot;);
+	    	//log.info(&quot;currentrow&quot;+currentrow+&quot;&quot;);
+	    //	lineReader.setLineNumber(currentrow);
+	    		  //  	log.info(&quot;currentrow outside loop&quot;+currentrow+&quot;&quot;);
+	    		    	  		//int getnumber = lineReader.getLineNumber();
+	    		    	  		//	    		    	log.info(&quot;currentrow outside loop&quot;+getnumber+&quot;&quot;);
+	  //f = new FileOutputStream(&quot;${csv}&quot;, true);
+//p = new PrintStream(f); 
+//this.interpreter.setOut(p); 
+//print(currentrow);
+
+//}
+//f.close();
+
+	    //	log.info(&quot;currentrow outside loop&quot;+currentrow+&quot;&quot;);
+//vars.put(&quot;lines&quot;, String.valueOf(lines)); // store the count into &quot;lines&quot; variable
+
+		  //int getnumber = lineReader.getLineNumber();  
+
+//vars.put(&quot;currentrow&quot;,currentrow);
+//log.info(${linestart});
+//FileOutputStream f=new FileOutputStream (&quot;${csv}&quot;);
+
+lineReader.close();</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion" enabled="false">
+          <stringProp name="BeanShellAssertion.query">${__setProperty(currentrow, ${currentrow})};</stringProp>
+          <stringProp name="BeanShellAssertion.filename"></stringProp>
+          <stringProp name="BeanShellAssertion.parameters"></stringProp>
+          <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+        </BeanShellAssertion>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Requeue" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">[&#xd;
+  {&#xd;
+    &quot;uniqueTaskId&quot;: ${(uniqueTaskId)}&#xd;
+  }&#xd;
+]</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${docconversionURL}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/manualdoc/requeue</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="false">
+          <stringProp name="filename">${csv}</stringProp>
+          <stringProp name="fileEncoding"></stringProp>
+          <stringProp name="variableNames">uniqueTaskId,filepath</stringProp>
+          <boolProp name="ignoreFirstLine">false</boolProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">true</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="linenumberReader" enabled="false">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">import com.opencsv.CSVReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+CsvReader reader = new CsvReader(new FileReader(&quot;${csv}&quot;), &apos;\t&apos;, &apos;\&apos;&apos;, ${currentrow});
+reader.readHeaders();
+
+while(reader.readRecord())
+            {
+                String taskId = reader.get(&quot;taskId&quot;);
+                String filepath = reader.get(&quot;path&quot;);
+                String currentrow = reader.get(&quot;row&quot;);
+                
+
+                // perform program logic here
+                System.out.println(taskId + &quot;:&quot; + filepath + &quot;:&quot; + currentrow);
+            }
+}</stringProp>
+        </BeanShellPreProcessor>
         <hashTree/>
       </hashTree>
     </hashTree>
