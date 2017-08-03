@@ -278,8 +278,8 @@ props.setProperty(&quot;AppD_Start_Time&quot;, startTest);</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">2</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">2</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${__property(user,1)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__property(ramp,1)}</stringProp>
         <longProp name="ThreadGroup.start_time">1452238614000</longProp>
         <longProp name="ThreadGroup.end_time">1452238614000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
